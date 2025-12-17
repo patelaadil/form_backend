@@ -35,6 +35,10 @@ app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const existUser = await Emp.findOne({ email });
     if (existUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -50,13 +54,14 @@ app.post("/register", async (req, res) => {
 
     await emp.save();
 
-    res.json({ message: "Registered Successfully!" });
+    res.status(201).json({ message: "Registered Successfully!" });
 
   } catch (error) {
-    console.error("Register error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("REGISTER ERROR:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // Login API
 
@@ -77,10 +82,11 @@ app.post("/login", async (req, res) => {
     res.json({ message: "Successfully Login" });
 
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("LOGIN ERROR:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 const PORT = process.env.PORT || 5000;
