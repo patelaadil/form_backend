@@ -31,49 +31,57 @@ const Emp = mongoose.model("Employee",Schema);
 
 // Register API
 
-app.post("/register", async (req,res) => {
-    const { name , email, password } = req.body;
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-    // check user exist or not
     const existUser = await Emp.findOne({ email });
-
-    if(existUser){
-        return res.json({ message: "!!! User already exists !!!" });
+    if (existUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashPassword = await bcrypt.hash(password, 8);
 
     const emp = new Emp({
-        name,
-        email,
-        password: hashPassword
-    })
+      name,
+      email,
+      password: hashPassword
+    });
 
     await emp.save();
 
-    res.json({ message: "Registered Successfully !"});
-})
+    res.json({ message: "Registered Successfully!" });
+
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // Login API
 
-app.post("/login", async (req,res) => {
+app.post("/login", async (req, res) => {
+  try {
     const { email, password } = req.body;
 
-    // check user exist or not
     const existUser = await Emp.findOne({ email });
-
-    if(!existUser){
-        return res.json({ message : "!!! User not exist !!!"});
+    if (!existUser) {
+      return res.status(400).json({ message: "User not exist" });
     }
 
-    const Match = await bcrypt.compare(password, existUser.password);
-    
-    if(!Match){
-        return res.json({ message : "!!! Password not matched !!!" });
+    const match = await bcrypt.compare(password, existUser.password);
+    if (!match) {
+      return res.status(400).json({ message: "Password not matched" });
     }
 
-    res.json({ message : "Successfully Login " });
-})
+    res.json({ message: "Successfully Login" });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 
