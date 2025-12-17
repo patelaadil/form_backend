@@ -8,7 +8,9 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin:"https://frontend-xi-two-87.vercel.app"
+}));
 app.use(express.json());
 
 // Mongoose connection
@@ -74,5 +76,5 @@ app.post("/login", async (req,res) => {
 })
 
 app.listen(5000, () => {
-    console.log("Server running at http://localhost:5000/");
+    console.log("Server running at https://form-backend-aoaq.onrender.com/");
 })
